@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+
 @Slf4j
 @SpringBootTest
 class GatewayApplicationTests {
@@ -33,15 +35,35 @@ class GatewayApplicationTests {
 		log.info("hot");
 		Flux<Integer> numbers = Flux
 				.just(1, 2, 3, 4)
-				.log();
+				.log()
+				.delayElements(Duration.ofSeconds(2))
+				.share(); //这个是关键，换成了热流
+
 		numbers
 				.reduce(Integer::sum)
-				.subscribe(sum -> log.info("Sum is: {}", sum));
+				.subscribe(sum -> {
+					log.info("Sum is: {}", sum);
+				});
+
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		numbers
 				.reduce((a, b) -> {
-					log.info("a={} b={}",a,b);
-					return a * b;})
+					log.info("a={} b={}", a, b);
+					return a * b;
+				})
 				.subscribe(product -> log.info("Product is: {}", product));
+
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
+
 
 }
