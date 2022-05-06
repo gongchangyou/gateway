@@ -19,7 +19,7 @@ import java.util.concurrent.Executor;
  * @date 2022/2/10 12:13 下午
  */
 
-@Component
+//@Component
 @Slf4j
 public class NacosRouteDynamicDataSource implements ApplicationRunner {
     @Autowired
